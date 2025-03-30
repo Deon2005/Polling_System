@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        let cameraStream;
+
+        function verifyVoterID(event) {
+            event.preventDefault();
+            const voterID = document.getElementById('voterID').value;
+            const voterIDPattern = /^[A-Za-z0-9]{10}$/;
+            
+            if (voterIDPattern.test(voterID)) {
+                document.getElementById('voterVerification').style.display = 'none';
+                document.getElementById('faceRecognition').style.display = 'block';
+                startCamera(); // Start the camera immediately after verification
+            } else {
+                alert('Invalid Voter ID. It must be a 10-character alphanumeric code.');
+            }
+        }
+
+        function startCamera() {
+            const video = document.getElementById('video');
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    cameraStream = stream;
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error('Error accessing camera:', err);
+                });
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                let tracks = cameraStream.getTracks();
+                tracks.forEach(track => track.stop());
+                cameraStream = null;
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            canvas.style.display = 'block';
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+
+        function submitPhoto() {
+            stopCamera(); // Stop the camera after submitting
+            document.getElementById('faceRecognition').style.display = 'none';
+            document.getElementById('loadingScreen').style.display = 'block';
+
+            setTimeout(() => {
+                let verificationSuccess = true; // Force verification success for testing
+                document.getElementById('loadingScreen').style.display = 'none';
+
+                if (verificationSuccess) {
+                    document.getElementById('otpVerification').style.display = 'block';
+                } else {
+                    alert('Face verification failed. Please retake the photo.');
+                    document.getElementById('faceRecognition').style.display = 'block';
+                    startCamera(); // Restart camera if verification fails
+                }
+            }, 3000); // Simulating processing delay
+        }
+
+        function verifyOTP(event) {
+            event.preventDefault();
+            const otp = document.getElementById('otp').value;
+            if (otp === "0000") { // Simulated OTP check for testing
+                alert("Verification Successful!");
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Invalid OTP. Please try again.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="verification-container" id="voterVerification">
+        <h2>Voter ID Verification</h2>
+        <form onsubmit="verifyVoterID(event)">
+            <label for="voterID">Enter Polling Officer's Voter ID:</label>
+            <input type="text" id="voterID" placeholder="Enter 10-character Voter ID" required maxlength="10">
+            <button type="submit">Verify</button>
+        </form>
+    </div>
+
+    <div class="face-recognition" id="faceRecognition" style="display: none;">
+        <h2>Face Recognition Verification</h2>
+        <video id="video" width="320" height="240" autoplay></video>
+        <button onclick="capturePhoto()">Capture Photo</button>
+        <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
+        <br>
+        <button onclick="submitPhoto()">Submit</button>
+        <button onclick="startCamera()">Retake Photo</button>
+    </div>
+
+    <div class="loading-screen" id="loadingScreen" style="display: none;">
+        <h2>Verifying face, please wait...</h2>
+    </div>
+
+    <div class="otp-verification" id="otpVerification" style="display: none;">
+        <h2>OTP Verification</h2>
+        <form onsubmit="verifyOTP(event)">
+            <label for="otp">Enter OTP:</label>
+            <input type="text" id="otp" placeholder="Enter OTP" required maxlength="6">
+            <button type="submit">Verify OTP</button>
+        </form>
+    </div>
+</body>
+</html>

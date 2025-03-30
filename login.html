@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="loginId">User ID:</label>
+            <input type="text" id="loginId" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+        <p id="error-message" class="error-message"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyClnH876hQQcnCqduwf9EhM5UsjDf_LqZ8",
+            authDomain: "pollingsystem-e58b2.firebaseapp.com",
+            projectId: "pollingsystem-e58b2",
+            storageBucket: "pollingsystem-e58b2.firebasestorage.app",
+            messagingSenderId: "1016483141437",
+            appId: "1:1016483141437:web:fe33d546332556671dd754"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const userId = document.getElementById("loginId").value;
+            const password = document.getElementById("password").value;
+
+            // Here, adjust authentication method as needed (this example uses email/password)
+            signInWithEmailAndPassword(auth, userId, password)
+                .then((userCredential) => {
+                    console.log("Login successful!");
+                    window.location.href = "verification.html";
+                })
+                .catch((error) => {
+                    document.getElementById("error-message").textContent = "Login failed: " + error.message;
+                });
+        });
+    </script>
+</body>
+</html>

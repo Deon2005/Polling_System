@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting History</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyClnH876hQQcnCqduwf9EhM5UsjDf_LqZ8",
+            authDomain: "pollingsystem-e58b2.firebaseapp.com",
+            projectId: "pollingsystem-e58b2",
+            storageBucket: "pollingsystem-e58b2.firebasestorage.app",
+            messagingSenderId: "1016483141437",
+            appId: "1:1016483141437:web:fe33d546332556671dd754"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadVotingHistory() {
+            const tableBody = document.getElementById("history-table-body");
+            tableBody.innerHTML = "";
+            const querySnapshot = await getDocs(collection(db, "votingHistory"));
+            let slNo = 1;
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const row = `<tr>
+                    <td>${slNo++}</td>
+                    <td>${data.voterID}</td>
+                    <td>${data.name}</td>
+                    <td><img src="${data.photo}" width="50"></td>
+                    <td><img src="${data.face}" width="50"></td>
+                    <td>${data.fingerprint ? "✔" : "✖"}</td>
+                    <td>${data.otp}</td>
+                    <td>${data.time}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        window.onload = loadVotingHistory;
+    </script>
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <span class="portal-title">Voting History</span>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+    </header>
+    <main>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Sl No</th>
+                    <th>Voter ID No</th>
+                    <th>Name</th>
+                    <th>Photo</th>
+                    <th>Face</th>
+                    <th>Fingerprint</th>
+                    <th>OTP</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="history-table-body"></tbody>
+        </table>
+    </main>
+    <script>
+        function logout() {
+            alert("Logging out...");
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

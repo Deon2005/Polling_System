@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poll Verification</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <span class="portal-title">Polling Page</span>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+    </header>
+    <main>
+        <div class="container" id="voter-id-section">
+            <h2>Voter Verification</h2>
+            <label for="voter-id">Enter Voter ID:</label>
+            <input type="text" id="voter-id" maxlength="10" placeholder="Enter 10-character ID">
+            <button onclick="startVerification()">Verify</button>
+        </div>
+
+        <div class="camera-section" id="camera-section" style="display:none;">
+            <h2>Face Verification</h2>
+            <video id="camera" autoplay></video>
+            <button onclick="capturePhoto()">Capture Photo</button>
+            <canvas id="photoCanvas" style="display:none;"></canvas>
+            <div>
+                <button onclick="submitPhoto()">Submit</button>
+                <button onclick="retakePhoto()">Retake</button>
+            </div>
+        </div>
+
+        <div class="fingerprint-section" id="fingerprint-section" style="display:none;">
+            <h2>Fingerprint Verification</h2>
+            <p>Place your finger on the scanner.</p>
+            <button onclick="verifyFingerprint()">Verify Fingerprint</button>
+        </div>
+
+        <div class="otp-section" id="otp-section" style="display:none; text-align:center;">
+            <h2>Enter OTP</h2>
+            <input type="text" id="otp" maxlength="4" placeholder="Enter 0000">
+            <button onclick="verifyOTP()">Submit</button>
+        </div>
+
+        <div id="loading-screen" style="display:none; text-align:center; padding:20px;">
+            <h2>Verifying, please wait...</h2>
+        </div>
+
+        <div id="success-screen" style="display:none; text-align:center; padding:20px;">
+            <h2>Polling successfully completed.</h2>
+            <p>Proceed to vote...</p>
+        </div>
+    </main>
+    
+    <script>
+        let videoStream;
+
+        function logout() {
+            alert("Logging out...");
+            window.location.href = "login.html";
+        }
+
+        function startVerification() {
+            document.getElementById("voter-id-section").style.display = "none";
+            document.getElementById("camera-section").style.display = "block";
+            startCamera();
+        }
+
+        function startCamera() {
+            let video = document.getElementById("camera");
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    videoStream = stream;
+                    video.srcObject = stream;
+                })
+                .catch(error => {
+                    console.error("Error accessing camera:", error);
+                    alert("Unable to access the camera.");
+                });
+        }
+
+        function capturePhoto() {
+            let video = document.getElementById("camera");
+            let canvas = document.getElementById("photoCanvas");
+            let context = canvas.getContext("2d");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            document.getElementById("photoCanvas").style.display = "block";
+        }
+
+        function submitPhoto() {
+            document.getElementById("camera-section").style.display = "none";
+            document.getElementById("loading-screen").style.display = "block";
+            setTimeout(() => {
+                document.getElementById("loading-screen").style.display = "none";
+                document.getElementById("fingerprint-section").style.display = "block";
+                stopCamera();
+            }, 2000);
+        }
+
+        function retakePhoto() {
+            document.getElementById("photoCanvas").style.display = "none";
+        }
+
+        function verifyFingerprint() {
+            document.getElementById("fingerprint-section").style.display = "none";
+            document.getElementById("loading-screen").style.display = "block";
+            setTimeout(() => {
+                document.getElementById("loading-screen").style.display = "none";
+                document.getElementById("otp-section").style.display = "block";
+            }, 2000);
+        }
+
+        function verifyOTP() {
+            let otp = document.getElementById("otp").value;
+            if (otp === "0000") {
+                document.getElementById("otp-section").style.display = "none";
+                document.getElementById("loading-screen").style.display = "block";
+                setTimeout(() => {
+                    document.getElementById("loading-screen").style.display = "none";
+                    document.getElementById("success-screen").style.display = "block";
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 2000);
+                }, 2000);
+            } else {
+                alert("Incorrect OTP. Try again.");
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                let tracks = videoStream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+        }
+    </script>
+</body>
+</html>

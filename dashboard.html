@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <span class="portal-title">Polling Officer's Portal</span>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+    </header>
+    <main>
+        <h1>Polling Percent :</h1>
+        <h1>Voters left :</h1>
+        <button class="start-polling-button" onclick="startPolling()">Start Polling</button>
+        <button class="History" onclick="history()">History</button>
+    </main>
+    <script>
+        function logout() {
+            alert("Logging out...");
+            window.location.href = "login.html";
+        }
+        
+        function startPolling() {
+            window.location.href = "poll.html";
+        }
+        function history()
+        {
+            window.location.href ="history.html";
+        }
+    </script>
+</body>
+</html>
