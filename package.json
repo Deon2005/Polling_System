@@ -1,5 +1,18 @@
 {
   "dependencies": {
-    "firebase": "^11.5.0"
-  }
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "firebase": "^11.5.0",
+    "firebase-admin": "^13.2.0"
+  },
+  "name": "polling_system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
