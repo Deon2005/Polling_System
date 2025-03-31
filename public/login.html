@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
 </head>
 <body>
     <div class="login-container">
@@ -23,8 +25,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyClnH876hQQcnCqduwf9EhM5UsjDf_LqZ8",
             authDomain: "pollingsystem-e58b2.firebaseapp.com",
@@ -34,25 +37,31 @@
             appId: "1:1016483141437:web:fe33d546332556671dd754"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
+        const db = getFirestore(app);
 
+        // Function to verify login
+        async function verifyLogin(userId, password) {
+            const userRef = doc(db, "users", userId);  // Fetch document by userId
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists() && userSnap.data().password === password) {
+                window.location.href = "verification.html";  // Redirect if valid
+            } else {
+                document.getElementById("error-message").textContent = "Invalid User ID or Password!";
+            }
+        }
+
+        // Event Listener for Login Form
         document.getElementById("loginForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            
             const userId = document.getElementById("loginId").value;
             const password = document.getElementById("password").value;
-
-            // Here, adjust authentication method as needed (this example uses email/password)
-            signInWithEmailAndPassword(auth, userId, password)
-                .then((userCredential) => {
-                    console.log("Login successful!");
-                    window.location.href = "verification.html";
-                })
-                .catch((error) => {
-                    document.getElementById("error-message").textContent = "Login failed: " + error.message;
-                });
+            verifyLogin(userId, password);
         });
     </script>
+    <script type="module" src="login.js"></script>
+
 </body>
 </html>
